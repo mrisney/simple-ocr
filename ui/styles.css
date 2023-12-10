@@ -1,3 +1,5 @@
+
+
 /*
  * Custom CSS
  */
@@ -22,7 +24,7 @@ body {background: #f6f6f6; color: #444; font-family: 'Roboto', sans-serif; font-
 .success_box:before {content: ''; display: block; width: 9px; height: 18px; border-bottom: 6px solid #fff; border-right: 6px solid #fff; -webkit-transform:rotate(45deg); -moz-transform:rotate(45deg); -ms-transform:rotate(45deg); transform:rotate(45deg); position: absolute; left: 17px; top: 10px;}
 .file_uploaded .success_box {display: inline-block;}
 .file_uploaded {margin-top: 0; width: 50px; background:#83ccd3; height: 50px;}
-.uploaded_file_view {max-width: 300px; margin: 40px auto; text-align: center; position: relative; transition: .2s; opacity: 0; border: 2px solid #ddd; padding: 15px;}
+.uploaded_file_view {max-width: 500px; margin: 40px auto; text-align: center; position: relative; transition: .2s; opacity: 0; border: 2px solid #ddd; padding: 15px;}
 .file_remove{width: 30px; height: 30px; border-radius: 50%; display: block; position: absolute; background: #aaa; line-height: 30px; color: #fff; font-size: 12px; cursor: pointer; right: -15px; top: -15px;}
 .file_remove:hover {background: #222; transition: .2s;}
 .uploaded_file_view img {max-width: 100%;}

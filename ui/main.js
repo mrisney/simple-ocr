@@ -12,7 +12,7 @@ $(document).ready(function() {
         resetUpload();
     });
 
-    $('#extractedText').hide(); 
+    $('#extractedTextForm').hide();
 });
 
 function handleFileUpload(e) {
@@ -54,8 +54,10 @@ function handleUploadSuccess(response) {
     // populateExtractedText(response.extracted_text);
     populateListWithAnswers(response.answers);
     
-    // show the extracted_text;
-    $('#extractedText').show().val(response.extracted_text || 'No OCR text available.');
+    // Populate and show the extracted text area
+    populateExtractedText(response.extracted_text);
+    toggleExtractedTextVisibility(true);
+    adjustTextareaHeightBasedOnContent();
 
 }
 
@@ -75,7 +77,8 @@ function resetUpload() {
     $("#uploaded_view").removeClass("show").find("img").remove();
     $("#uploaded_view .file_remove").remove();
     $("#responseList").empty();
-    $('#extractedTextForm').hide().val('');
+    $('#extractedTextForm').hide();
+    $('#extractedText').val('');
     $(".error_msg").text("");
     
     // Reset the file input
@@ -98,4 +101,35 @@ function populateListWithAnswers(answers) {
         listItem.html('<strong>' + question + '</strong>: ' + answer);
         responseList.append(listItem);
     });
+}
+
+
+function adjustTextareaHeightBasedOnContent() {
+    const textArea = $('#extractedText');
+    // Adjust height based on scrollHeight or set a default
+    const newHeight = textArea.get(0).scrollHeight || '100px';
+    setExtractedTextHeight(newHeight);
+}
+
+function populateExtractedText(text) {
+    // Populate the text area with extracted text
+    if (text) {
+        $('#extractedText').val(text);
+        adjustTextareaHeightBasedOnContent(); // Adjust height after setting text
+    } else {
+        $('#extractedText').val('No OCR text available.');
+        setExtractedTextHeight('100px'); // Set to default height
+    }
+}
+
+function toggleExtractedTextVisibility(show) {
+    if (show) {
+        $('#extractedTextForm').show();
+    } else {
+        $('#extractedTextForm').hide();
+    }
+}
+
+function setExtractedTextHeight(height) {
+    $('#extractedText').css('height', height);
 }
