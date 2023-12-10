@@ -1,10 +1,16 @@
-from typing import Union
-from fastapi import FastAPI, File, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-import numpy as np
 import io
+import logging
+import numpy as np
 
-from api import tesseractAPI, insuranceCardExtractAPI, registrationCardExtractAPI
+from fastapi import FastAPI, File, UploadFile
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
+from api import openaiAnalysisAPI, tesseractAPI
+
+# Set up basic logging
+logging.basicConfig(level=logging.INFO)
+
 
 description = """
 Tesseract OCR, ChatGPT helps you do awesome stuff. 🚀
@@ -38,11 +44,7 @@ app = FastAPI(
     },
 )
 
-
-
 origins = ["*"]
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -50,6 +52,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#app.mount("/api", app)
+app.mount("/ui", StaticFiles(directory="ui", html=True), name="ui")
 
 @app.post("/basic-ocr")
 async def basic_ocr(file: UploadFile = File(...)):
@@ -71,8 +76,9 @@ async def basic_ocr(file: UploadFile = File(...)):
         "extracted_text": extracted_text
     }
 
-@app.post("/insurance-card-extract")
-async def insurance_card_extract(file: UploadFile = File(...)):
+@app.post("/ocr_openai_analysis")
+async def ocr_openai_analysis(file: UploadFile = File(...)):
+    logging.info(f"document being uploaded: {file.filename}")
     contents = await file.read()
 
     # Convert the contents to a format suitable for OCR
@@ -80,42 +86,21 @@ async def insurance_card_extract(file: UploadFile = File(...)):
     file_bytes = np.frombuffer(image_stream.read(), dtype=np.uint8)
 
     # Perform OCR on the image
-    extracted_text = tesseractAPI.extract_text(file_bytes)
-    answer = await insuranceCardExtractAPI.query_gpt3(extracted_text)
-   
+    ocr_extracted_text = tesseractAPI.extract_text(file_bytes)
+    logging.info(f"ocr text from document: {ocr_extracted_text}")
+
+     # Analyze with OpenAI chatGPT
+    response = await openaiAnalysisAPI.query_gpt3(ocr_extracted_text)
+    logging.info(f"Openai Analysis response: {response}")
+    
     # Close the file
     await file.close()
 
     return {
         "filename": file.filename, 
         "message": f"File processed successfully {file.filename}",
-        "extracted_text": extracted_text,
-        "answer"    : answer
-    }
-
-
-@app.post("/registration_card_extract")
-async def registration_card_extract(file: UploadFile = File(...)):
-    contents = await file.read()
-
-    # Convert the contents to a format suitable for OCR
-    image_stream = io.BytesIO(contents)
-    file_bytes = np.frombuffer(image_stream.read(), dtype=np.uint8)
-
-    # Perform OCR on the image
-    extracted_text = tesseractAPI.extract_text(file_bytes)
-
-    # analyze with ChatGPT
-    answer = await registrationCardExtractAPI.query_gpt3(extracted_text)
-   
-    # Close the file
-    await file.close()
-
-    return {
-        "filename": file.filename, 
-        "message": f"File processed successfully {file.filename}",
-        "extracted_text": extracted_text,
-        "answer"    : answer
+        "extracted_text": ocr_extracted_text,
+        "answers": response.get('question_answer_pairs', [])
     }
 
 
