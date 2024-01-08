@@ -30,9 +30,9 @@ function handleFileUpload(e) {
 function uploadFile(file) {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     $.ajax({
-        url: '/ocr_openai_analysis',
+        url: '/moana/ocr_openai_analysis',
         type: 'POST',
         data: formData,
         contentType: false,
@@ -40,12 +40,12 @@ function uploadFile(file) {
         success: handleUploadSuccess,
         error: handleUploadError
     });
-    
+
     displayUploadedFile(file);
 }
 
 function handleUploadSuccess(response) {
-    
+
     // Hide the upload button
     btnOuter.removeClass("file_uploading").addClass("file_uploaded");
     btnOuter.hide();
@@ -53,7 +53,7 @@ function handleUploadSuccess(response) {
 
     // populateExtractedText(response.extracted_text);
     populateListWithAnswers(response.answers);
-    
+
     // Populate and show the extracted text area
     populateExtractedText(response.extracted_text);
     toggleExtractedTextVisibility(true);
@@ -80,10 +80,10 @@ function resetUpload() {
     $('#extractedTextForm').hide();
     $('#extractedText').val('');
     $(".error_msg").text("");
-    
+
     // Reset the file input
     btnUpload.replaceWith(btnUpload.val('').clone(true));
-    
+
     // Show the button and container again
     btnOuter.removeClass("file_uploading file_uploaded").show();
     uploadContainer.show();
@@ -92,11 +92,11 @@ function resetUpload() {
 function populateListWithAnswers(answers) {
     const responseList = $("#responseList");
     responseList.empty();
-    
+
     answers.forEach(function(qa_pair) {
         const question = Object.keys(qa_pair)[0];
         const answer = qa_pair[question];
-        
+
         const listItem = $('<li class="list-group-item"></li>');
         listItem.html('<strong>' + question + '</strong>: ' + answer);
         responseList.append(listItem);

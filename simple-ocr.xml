@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+    <id>simple-ocr</id>
+    <name>MOANA OCR</name>
+    <description>MOANA OCR Windows Service</description>
+    <executable>D:\\software\\python\\python3.12\\python.exe</executable>
+    <arguments>init.py</arguments>
+    <logmode>rotate</logmode>
+</service>

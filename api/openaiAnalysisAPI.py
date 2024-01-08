@@ -7,7 +7,7 @@ import re
 logging.basicConfig(level=logging.INFO)
 
 # Constants for OpenAI API
-OPENAI_API_KEY = "[API-KEY]"
+OPENAI_API_KEY = "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"
 
 OPENAI_API_URL = "https://api.openai.com/v1/completions"
 MODEL = "text-davinci-003"
